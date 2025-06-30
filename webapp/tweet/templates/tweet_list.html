@@ -1,0 +1,99 @@
+{% extends "layout.html" %} 
+{% block title %} Tweet App {% endblock %} 
+
+{% block content %}
+
+<h1 class="text-4xl text-white font-bold m-4 text-center">Welcome to Django Tweets</h1>
+
+<div
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4"
+>
+  {% for tweet in tweets %}
+  <div
+    class="relative card-animate card-transition card-delay-1"
+  >
+    <div
+      class="relative bg-transparent border border-white rounded-2xl overflow-hidden shadow-lg"
+    >
+      <div
+        class="absolute top-4 left-4 bg-cyan-600 text-white text-sm px-4 py-2 rounded-md shadow-md z-10 font-bold"
+      >
+        {{ tweet.user.username }}
+      </div>
+
+      {% if tweet.get_photo_bytes %}
+      <img
+        src="{% url 'view_tweet_image' tweet.id %}"
+        alt="Social Media"
+        class="w-full h-64 object-cover rounded-t-2xl"
+      />
+      {% endif %}
+
+      <div class="p-6 pb-16 text-white font-bold">
+        <h3 class="text-2xl">Social Media</h3>
+
+        <p
+          id="tweet-text-{{ tweet.id }}"
+          class="text-base mt-2 line-clamp-3 overflow-hidden transition-all duration-300"
+        >
+          {{ tweet.text }}
+        </p>
+
+        {% if tweet.text|length > 180 %}
+        <button
+          type="button"
+          onclick="toggleText('{{ tweet.id }}')"
+          class="text-sm text-cyan-400 mt-2 underline hover:text-cyan-200"
+          id="read-toggle-{{ tweet.id }}"
+        >
+          Read more
+        </button>
+        {% endif %}
+      </div>
+
+      <div class="absolute bottom-4 left-4 flex gap-2">
+        {% if tweet.user == user %}
+        <a
+          href="{% url 'tweet_edit' tweet.id %}"
+          class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-1.5 rounded-md shadow-sm transition font-bold"
+          >Edit</a
+        >
+        <a
+          href="{% url 'tweet_delete' tweet.id %}"
+          class="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-1.5 rounded-md shadow-sm transition font-bold"
+          >Delete</a
+        >
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+  <style>
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;  
+      overflow: hidden;
+    }
+  </style>
+
+
+  <script>
+    function toggleText(id) {
+      const paragraph = document.getElementById(`tweet-text-${id}`);
+      const toggleBtn = document.getElementById(`read-toggle-${id}`);
+  
+      if (paragraph.classList.contains("line-clamp-3")) {
+        paragraph.classList.remove("line-clamp-3");
+        toggleBtn.textContent = "Read less";
+      } else {
+        paragraph.classList.add("line-clamp-3");
+        toggleBtn.textContent = "Read more";
+      }
+    }
+  </script>
+
+{% endblock %}

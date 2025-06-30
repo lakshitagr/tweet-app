@@ -1,0 +1,150 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Full Stack Web App{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .btn-3d {
+      box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.1),
+                  0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease-in-out;
+    }
+    .btn-3d:active {
+      transform: translateY(2px);
+    }
+    .btn-signup-animate {
+      background: linear-gradient(135deg, #8e44ad, #3498db);
+      color: white;
+      transition: all 0.5s ease-in-out;
+    }
+    .btn-signup-animate:hover {
+      transform: rotate(-1deg) scale(1.05);
+      background: linear-gradient(135deg, #3498db, #8e44ad);
+    }
+    @keyframes fadeInCard {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .card-animate { animation: fadeInCard 0.7s ease forwards; }
+    .card-delay-1 { animation-delay: 0.2s; }
+    .card-delay-2 { animation-delay: 0.4s; }
+    .card-delay-3 { animation-delay: 0.6s; }
+    .card-delay-4 { animation-delay: 0.8s; }
+    .card-transition { transition: all 0.4s ease; }
+    .card-shadow-hover:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+      border: 2px solid #38bdf8;
+    }
+    .card-shadow-hover:hover h3 { color: #0ea5e9; }
+    .card-shadow-hover:hover img { transform: scale(1.05); }
+    .card-shadow-hover img { transition: transform 0.5s ease; }
+
+    .background-tweets {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .tweet-float {
+      position: absolute;
+      width: 250px;
+      height: 120px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      opacity: 0.05;
+      backdrop-filter: blur(3px);
+      transform: rotate(-2deg);
+      animation: floatTweet 40s linear infinite;
+    }
+    .tweet-float::before {
+      content: 'TweetNest ✦ @user · 1h\nThis is a tweet preview';
+      display: block;
+      font-size: 14px;
+      color: #000;
+      padding: 12px;
+      white-space: pre-wrap;
+    }
+    @keyframes floatTweet {
+      0%   { transform: translateY(100vh) rotate(-2deg); opacity: 0.05; }
+      50%  { opacity: 0.08; }
+      100% { transform: translateY(-120%) rotate(-1deg); opacity: 0.03; }
+    }
+  </style>
+</head>
+
+<body class="m-0 p-0 bg-gray-700 text-gray-800 {% if fullpage %}overflow-hidden h-screen{% else %}overflow-auto min-h-screen{% endif %}">
+
+  <div class="background-tweets">
+    <div class="tweet-float" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="tweet-float" style="left: 35%; animation-delay: 10s;"></div>
+    <div class="tweet-float" style="left: 60%; animation-delay: 20s;"></div>
+    <div class="tweet-float" style="left: 80%; animation-delay: 30s;"></div>
+  </div>
+
+  {% if not fullpage %}
+    <!-- Navbar -->
+    <nav class="bg-gray-900 shadow-lg transition-colors duration-300 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
+        <div class="flex items-center space-x-4">
+          <h1 class="text-2xl font-bold text-white">TweetNest</h1>
+          <a href="{% url 'tweet_create' %}" class="btn-3d bg-violet-600 hover:bg-violet-500 text-white px-5 py-1.5 rounded-full transition duration-300 font-semibold">
+            Add Tweet
+          </a>
+        </div>
+        <div class="hidden md:flex items-center space-x-4">
+          <a href="{% url 'tweet_list' %}" class="text-white hover:text-gray-300 transition hover:scale-105 font-semibold">Home</a>
+          {% if user.is_authenticated %}
+            <form action="{% url 'logout' %}" method="post">
+              {% csrf_token %}
+              <button class="btn-3d bg-red-400 hover:bg-red-700 text-black px-4 py-2 rounded-full font-semibold transition duration-300" type="submit">Logout</button>
+            </form>
+          {% else %}
+            <a href="{% url 'register' %}" class="text-white hover:text-gray-300 transition hover:scale-105 font-semibold">Register</a>
+            <a href="{% url 'login' %}" class="btn-3d bg-amber-400 hover:bg-amber-300 text-black px-4 py-2 rounded-full font-semibold transition duration-300">
+              Login
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+    <!-- Search Bar -->
+    <form action="{% url 'tweet_list' %}" method="get" role="search">
+      <div class="py-6  sticky top-6 z-40" style="background-color: #C1DAD6;">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <input 
+            type="search" 
+            name="q" 
+            placeholder="Search by username..." 
+            value="{{ search_query|default:'' }}" 
+            class="w-full sm:w-96 px-4 py-2 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-300 shadow-sm transition duration-300" 
+          />
+          <button 
+            type="submit" 
+            class="btn-3d bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-full font-semibold transition duration-300 hover:scale-105"
+          >
+            🔍 Search
+          </button>
+        </div>
+        {% if search_query %}
+          <p class="text-center text-gray-600 mt-2">
+            Showing tweets by users matching "<strong>{{ search_query }}</strong>"
+          </p>
+        {% endif %}
+      </div>
+    </form>
+  {% endif %}
+
+  <!-- Page Content -->
+  <div>{% block content %}{% endblock %}</div>
+</body>
+</html>
