@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}Create Tweet{% endblock %}
+
+{% with fullpage=True %}
+  {% block content %}
+  <div class="h-screen flex items-center justify-center bg-gray-700">
+    <div class="w-full max-w-2xl bg-gray-500 p-6 rounded-lg shadow-md">
+      <h1 class="text-5xl font-semibold text-white text-center mb-4">Welcome to Django Project</h1>
+
+      <h2 class="text-3xl font-semibold text-white text-center mb-6">
+        {% if tweet_id %} Edit Tweet {% else %} Create Tweet {% endif %}
+      </h2>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="space-y-4 border-b pb-4">
+          {{ form.as_p }}
+        </div>
+
+        <div class="mt-6 flex items-center space-x-4">
+          <button 
+            type="submit" 
+            class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded transition duration-300"
+          >
+            Submit
+          </button>
+
+          <a 
+            href="{% url 'tweet_list' %}" 
+            class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded transition duration-300"
+          >
+            Back to tweet list
+          </a>
+        </div>
+      </form>
+
+      {% if tweet_image_url %}
+        <div class="mt-6 text-center">
+          <strong class="text-gray-100 block mb-2">Current Image:</strong>
+          <img src="{{ tweet_image_url }}" alt="Tweet Image" class="mx-auto max-h-52 object-cover rounded shadow-md">
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endblock %}
+{% endwith %}

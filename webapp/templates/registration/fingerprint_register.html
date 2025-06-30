@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block title %}Fingerprint Setup{% endblock %}
+
+{% block content %}
+<div class="min-h-[calc(94.7vh-7rem)] flex items-center justify-center px-4 py-10">
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md p-8">
+    <h2 class="text-2xl font-bold text-center text-white mb-4">Register Your Fingerprint</h2>
+    <p class="text-center text-gray-300 mb-6">This step will enhance your account security.</p>
+    <div class="flex justify-center text-black">
+      <button onclick="startFingerprintRegistration()" class="...">
+  🔒 Register Fingerprint
+</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function base64ToArrayBuffer(base64) {
+  const binary = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
+  const len = binary.length;
+  const buffer = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    buffer[i] = binary.charCodeAt(i);
+  }
+  return buffer;
+}
+
+function bufferToBase64(buffer) {
+  return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+async function startFingerprintRegistration() {
+  try {
+    const res = await fetch('/start-registration/');
+    const contentType = res.headers.get("content-type");
+
+    if (!res.ok || !contentType.includes("application/json")) {
+      const fallbackText = await res.text();  // get raw HTML error
+      console.error("Unexpected response:", fallbackText);
+      alert("Error: You may not be logged in.");
+      return;
+    }
+
+    const options = await res.json();
+
+    options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
+    options.user.id = Uint8Array.from(atob(options.user.id), c => c.charCodeAt(0));
+
+    const credential = await navigator.credentials.create({ publicKey: options });
+
+    const response = {
+      id: credential.id,
+      rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+      type: credential.type,
+      response: {
+        attestationObject: btoa(String.fromCharCode(...new Uint8Array(credential.response.attestationObject))),
+        clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(credential.response.clientDataJSON))),
+      }
+    };
+
+    const verify = await fetch('/finish-registration/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(response)
+    });
+
+    if (verify.ok) {
+  alert('Fingerprint registered successfully!');
+  window.location.href = "{% url 'tweet_list' %}"; // ✅ Go to Home
+} else {
+  alert('Fingerprint registration failed.');
+}
+  } catch (err) {
+    console.error("Error during fingerprint registration:", err.message);
+    alert("Something went wrong. Check console.");
+  }
+}
+
+</script>
+{% endblock %}
