@@ -8,6 +8,8 @@ from .models import Tweet
 from .forms import TweetForm, UserRegistrationForm, UserRegistrationForm
 from django.contrib.auth.decorators import login_required
 from .models import WebAuthnCredential
+from django.contrib.auth import login
+import requests
 
 def index(request):
     return render(request, 'index.html')
@@ -90,7 +92,6 @@ def tweet_delete(request, tweet_id):
 
 
 
-from django.contrib.auth import login
 
 def register(request):
     if request.method == 'POST':
@@ -117,3 +118,37 @@ def view_tweet_image(request, tweet_id):
     if not image_data:
         raise Http404("No image found")
     return HttpResponse(image_data, content_type='image/jpeg')
+
+
+
+
+
+def news_list(request):
+    api_url = "https://newsapi.org/v2/top-headlines"
+    params = {
+        'country': 'us',
+        'apiKey': 'ac19266c18c74d18aa6bf3090636ae29',
+        'pageSize': 100,     # optional: limit articles
+        'language': 'en',   # optional
+    }
+
+    response = requests.get(api_url, params=params)
+
+    articles = []
+    if response.status_code == 200:
+        data = response.json()
+        for article in data.get('articles', []):
+            articles.append({
+                'title': article.get('title'),
+                'description': article.get('description'),
+                'image_url': article.get('urlToImage'),
+                'published_at': article.get('publishedAt'),
+                'author': article.get('author'),
+                'location': article.get('source', {}).get('name'),
+                'category': 'Top Headlines',  # optional static label
+                'url': article.get('url'),    # add article URL for "Read" links
+            })
+    else:
+        print("Error fetching news:", response.text)
+
+    return render(request, 'news_list.html', {'articles': articles})

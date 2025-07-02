@@ -13,6 +13,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(template_name='registration/login.html', authentication_form=CustomLoginForm), name='login'),
     # 🔐 Image decryption and display route
     path('image/<int:tweet_id>/', views.view_tweet_image, name='view_tweet_image'),
+    path('news/', views.news_list, name='news_list'),
     # path('start-registration/', webauthn_views.start_registration, name='start_registration'),
     # path('finish-registration/', webauthn_views.finish_registration, name='finish_registration'),
     # path('start-authentication/', webauthn_views.start_authentication, name='start_authentication'),

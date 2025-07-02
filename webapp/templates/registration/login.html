@@ -54,21 +54,29 @@
 
       <button type="submit"
               class="w-full bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-2 rounded-md glow-border transition duration-300 hover:scale-105 fade-in-up field-delay-3">
-        ✨ Login
+         Login
       </button>
     </form>
 
-    <div class="mt-6 text-center fade-in-up field-delay-3">
+    <!-- <div class="mt-6 text-center fade-in-up field-delay-3">
       <p class="text-sm text-white/70 mb-2">Or</p>
       <button onclick="loginWithFingerprint()" class="w-full py-2 rounded-md font-semibold btn-gradient">
         🔐 Login with Fingerprint
       </button>
-    </div>
+    </div> -->
 
     <p class="mt-5 text-sm text-center text-white/70 fade-in-up field-delay-3">
       Don’t have an account? 
       <a href="{% url 'register' %}" class="text-cyan-200 hover:text-white underline">Sign up</a>
     </p>
+
+    <p class="mt-4 text-center text-gray-400">OR</p>
+
+<a href="{% url 'social:begin' 'google-oauth2' %}?next=/">
+    <button class="bg-red-500 text-white px-4 py-2 rounded-md mt-4 w-full">
+        Sign in with Google
+    </button>
+</a>
   </div>
 </div>
 

@@ -2,7 +2,7 @@
 {% block title %}Register{% endblock %}
 {% block content %}
 
-<div class="h-screen bg-gray-100 dark:bg-gray-900 flex justify-center items-center">
+<div class="h-100 bg-gray-100 dark:bg-gray-900 flex justify-center items-center">
   <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md">
     <h2 class="text-3xl font-bold text-center text-white mb-6">Create Your Account</h2>
 
@@ -44,7 +44,15 @@
       <button type="submit" class="w-full py-2 px-4 rounded bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition">
         Register
       </button>
+      
     </form>
+     <p class="mt-4 text-center text-gray-400">OR</p>
+
+<a href="{% url 'social:begin' 'google-oauth2' %}?next=/">
+    <button class="bg-red-500 text-white px-4 py-2 rounded-md mt-4 w-full">
+        Sign in with Google
+    </button>
+</a>
 
     <p class="text-center mt-6 text-sm text-white/80">
       Already have an account?

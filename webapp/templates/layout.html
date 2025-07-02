@@ -102,6 +102,7 @@
         </div>
         <div class="hidden md:flex items-center space-x-4">
           <a href="{% url 'tweet_list' %}" class="text-white hover:text-gray-300 transition hover:scale-105 font-semibold">Home</a>
+          <a href="{% url 'news_list' %}" class="text-white hover:text-gray-300 transition hover:scale-105 font-semibold">News</a>
           {% if user.is_authenticated %}
             <form action="{% url 'logout' %}" method="post">
               {% csrf_token %}
